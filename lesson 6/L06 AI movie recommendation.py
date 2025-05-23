@@ -7,7 +7,6 @@ import time
 
 # Initialize colorama
 init(autoreset=True)
-
 # Load and preprocess the dataset
 def load_data():
     try:
@@ -40,6 +39,15 @@ def recommend_movies(genre=None, mood=None, rating=None, top_n=5):
         filtered_df = filtered_df[filtered_df['IMBD_Rating'] >= rating]
     
     filtered_df = filtered_df.sample(frac=1).reset_index(drop=True) # Randomize the order
+
+    recommandations = []
+    for idx, row in filtered_df.iterrows():
+        overview = row["Overview"]
+        if pd.isna(overview):
+            continue
+        polarity = TextBlob(overview).sentiment.polarity
+        if (mood and ((TextBlob(mood).sentiment.polarity < 0 and polarity > 0 ) or polarity >= 0)) or not mood:
+            recommandations.append((row['Series_Title'], polarity))
 
 # Display recommendations 🍿     
 def display_recommendations(recs, name):
