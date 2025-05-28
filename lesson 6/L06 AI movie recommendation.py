@@ -48,6 +48,10 @@ def recommend_movies(genre=None, mood=None, rating=None, top_n=5):
         polarity = TextBlob(overview).sentiment.polarity
         if (mood and ((TextBlob(mood).sentiment.polarity < 0 and polarity > 0 ) or polarity >= 0)) or not mood:
             recommandations.append((row['Series_Title'], polarity))
+        if len(recommandations) == top_n:
+            break
+    
+    return recommandations if recommandations else "No suitable movie recommandations found."
 
 # Display recommendations 🍿     
 def display_recommendations(recs, name):
@@ -62,10 +66,15 @@ def processing_animation():
         print(Fore.YELLOW + ".", end="", flush=True)
         time.sleep(0.5)
 
-# Handle AI recommendation flow 🔍
+# Handle AI recommendation flow 
 def handle_ai(name):
-    # Show genres in a single line
+    print(Fore.Blue + "\n🔍 Let's find the perfect movie for you!\n")
 
+    # Show genres in a single line
+    print(Fore.GREEN + "Available Genres: ", end="")
+    for idx, genre in enumerate(genre, 1):
+        print(f"{Fore.CYAN}{idx}. {genre}")
+        print() # To move to the next line after all the genres are listed
 
     # Processing animation while analyzing mood 😊  😞  😐
 
