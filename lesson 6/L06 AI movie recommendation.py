@@ -58,7 +58,7 @@ def display_recommendations(recs, name):
     print(Fore.YELLOW + f"\n🍿 AI-Analysed movie recommendation for {name} :")
     for idx, (title, polarity) in enumerate(recs, 1):
         sentiment = "Positive 😊" if polarity > 0 else "Negative😞" if polarity < 0 else "Neutral"
-        print(f"{Fore.CYAN}{idx}  🎥 {title} (polarity: {.2f}, {sentiment})")
+        print(f"{Fore.CYAN}{idx}  🎥 {title} (polarity: {polarity:.2f}, {sentiment})")
 
 # Small processing animation
 def processing_animation():
@@ -74,17 +74,65 @@ def handle_ai(name):
     print(Fore.GREEN + "Available Genres: ", end="")
     for idx, genre in enumerate(genre, 1):
         print(f"{Fore.CYAN}{idx}. {genre}")
-        print() # To move to the next line after all the genres are listed
+    print() # To move to the next line after all the genres are listed
 
-    # Processing animation while analyzing mood 😊  😞  😐
+    while True: 
+        genre_input = input(Fore.YELLOW + "Enter genre number or name: ").strip()
+        if genre_input.isdigit() and 1 <= int(genre_input) <=len(genres):
+            genre = genres[int(genre_input)-1]
+            break
+        elif genre_input.title() in genres:
+            genre = genre_input.title()
+            break
+        print(Fore.RED + "Invalid input. Try again. \n")
 
-        # Small processing animation during mood analysis
+    mood = input(Fore.YELLOW + "How do you feel today? (Describe your mood): ").strip()
+
+    # Processing animation while analyzing mood     
+    print(Fore.BLUE + "n\Analysing mood", end="", flush= True)
+    processing_animation()    # Small processing animation during mood analysis
+    polarity = TextBlob(mood).sentiment.polarity
+    mood_desc = "positive 😊" if polarity > 0 else "negative 😞" if polarity < 0 else "neutral 😐"
+    print(f"\n{Fore.GREEN}Your mood is {mood_desc} (Polarity{polarity:2.f}).\n")
+
+    while True:
+        rating_input = input(Fore.YELLOW + "Enter minimum IMBD rating(7.6-9.3) or ; skip: ").strip()
+        if rating_input.lower() == 'skip':
+            rating = None
+            break
+        try:
+            rating = float(rating_input)
+            if 7.6 <=rating <= 9.3:
+                break
+            print(Fore.RED + "Rating out of range. Try again. \n")
+        except ValueError:
+            print(Fore.RED + "Invalid input. Try again.\n")
     
     # Processing animation while finding movies
-    
-      # Small processing animation while finding movies 🎬🍿
+    print(f"{Fore.BLUE}\n Finding movies for {name}", end="", flush=True)
+    processing_animation()  # Small processing animation while finding movies 
 
-   
+    recs = recommend_movies(genre=genre, mood=mood, rating=rating, top_n=5)
+    if isinstance(recs, str):
+        print(Fore.RED + recs +"\n")
+    else:
+        display_recommendations(recs,name)
+
+    while True:
+        action = input(Fore.YELLOW + "\nWould you like more recommandations? (yes/no): ").strip().lower()
+        if action == 'no':
+            print(Fore.GREEN + f"\nEnjoy your movie picks {name} !🎬🍿\n")
+            break
+        elif action == 'yes':
+            recs = recommend_movies(genre=genre, mood=mood, rating=rating, top_n=5)
+            if isinstance(recs, str):
+                print(Fore.RED + recs +"\n")
+            else:
+                display_recommendations(recs,name)
+        else:
+            print(Fore.RED + "Invalid choice. Try again\n")
+
+
 # Main program 
 def main():
     print(Fore.BLUE + "🎥 Welcome to your Personal Movie Recommendation Assistant! 🎥\n")
