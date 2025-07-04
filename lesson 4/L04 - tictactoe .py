@@ -1,5 +1,5 @@
 import random
-from colorama import init, Fore
+from colorama import init, Fore, style
 
 # Initialize Colorama
 init(autoreset=True)
@@ -22,9 +22,24 @@ def format_symbol(symbol):
         return Fore.YELLOW + symbol + Fore.RESET
 
 def player_choice():
+    symbol = ''
+    while symbol not in ['X', 'O']:
+        symbol = input(Fore.GREEN + "Do tou want to be X or O?").upper()
+    if symbol == 'X':
+        return('X', 'O')
+    else:
+        return("O", 'X')
     
-
 def player_move(board, symbol, player_name):
+    move = -1
+    while move not in range(1, 10) or not board[move - 1].isdigit():
+        try:
+            move = int(input(Fore.GREEN + f"{player_name}, enter your move (1-9): "))
+            if move not in range(1, 10) or not board[move -1].isdigit():
+                print(Fore.RED + "Invalid move, please try again")
+        except ValueError:
+            print(Fore.RED + "Please enter a valid number between 1 and 9.")
+    board[move - 1] = symbol
     
 
 def ai_move(board, ai_symbol, player_symbol):
