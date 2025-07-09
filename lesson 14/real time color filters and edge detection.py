@@ -94,5 +94,8 @@ while True:
         print("Exiting...")
         break
     else:
-        print("Invalid key! Please use 'r', ")
+        print("Invalid key! Please use 'r', 'b', 'g', 'i', 'd', 's', 'c', or 'q'.")
+
+    
+    cv2.destroyAllWindows()
     
