@@ -17,17 +17,16 @@ y = mnist['target'].astype(int) #Labels (digits 0-9)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Create and train a logistic regression model
-model = logisticRegression(max_iter=10000)
+model = LogisticRegression(max_iter=10000)
 model.fit(X_train, y_train)
 
 # Evaluate the model
-y_pred = model,predict(X_test)
+y_pred = model.predict(X_test)
 accuracy = metrics.accuracy_score(y_test, y_pred)
 print(f"Test accuracy:{accuracy}")
 
 # Display the first 5 test images and their predicted labels
 for i in range(5):  # You can change the range to display more images (e.g., 10 or more)
     plt.imshow(X_test.iloc[i].values.reshape(28, 28), cmap=plt.cm.binary)
-    plt.title(f"Predicted:{y_pred[1]}, Actual:{y_test.iloc[i]}")
+    plt.title(f"Predicted:{y_pred[i]}, Actual:{y_test.iloc[i]}")
     plt.show()
-
