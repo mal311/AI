@@ -85,16 +85,19 @@ def detect_gesture(hand_landmarks, handedness):
 
     # Check if thumb is open
     if handedness == 'Right':
-         # Thumb is open
-         # Thumb is closed
+        if thumb_tip.x > thumb_ip.x :
+            fingers.append(1)# Thumb is open
+        else:
+            fingers.append(0)# Thumb is closed
 
     else:
-         # Thumb is open
+        if thumb_tip.x < thumb_ip.x :
+            fingers.append(1)# Thumb is open
         else:
-             # Thumb is closed
+            fingers.append(0) # Thumb is closed
 
     # Total number of fingers up
-    
+    total_fingers = fingers.count(1)
 
     # Determine gesture based on number of fingers up
     if total_fingers == 5:
