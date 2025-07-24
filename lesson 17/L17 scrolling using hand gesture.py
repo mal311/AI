@@ -101,11 +101,11 @@ def detect_gesture(hand_landmarks, handedness):
 
     # Determine gesture based on number of fingers up
     if total_fingers == 5:
-        
+        return "scroll_up"
     elif total_fingers == 0:
-        
+        return "scroll_down"
     else:
-        
+        return "none"
 
 
 
@@ -117,22 +117,32 @@ def detect_gesture(hand_landmarks, handedness):
 
 def main():
     # Initialize webcam
-    
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
 
     if not cap.isOpened():
-        
+        print("Error: Could not open webcam")
         return
 
-     # Previous time for FPS calculation
-     # Timestamp of the last scroll action
+    pTime = 0 # Previous time for FPS calculation
+    last_scroll_time = 0 # Timestamp of the last scroll action
 
-    
+    print("Hand Gesture Scroll Control is running")
+    print("Show an open palm to scroll up")
+    print("Make a fist to scroll down")
+    print("Press 'q' to exit")
 
     while True:
-        
+        success, img = cap.read()
 
-         # Flip the image for a mirror effect
-        
+        if not success:
+            print("Failed to grab frame.")
+            break
+
+        img = cv2.flip(img, 1) # Flip the image for a mirror effect
+        img_rgb = cv2.cvtCOLOR(img, cv2.COLOR_BGR2RGB)
+        results = hands.process(img_rgb)
 
         gesture = "none"
         handedness = "Unknown"
@@ -144,10 +154,13 @@ def main():
             for hand_landmarks, hand_info in zip(results.multi_hand_landmarks, results.multi_handedness):
 
                 # Get hand label (Left/Right)
-                
+                handedness_label = hand_info.classification.classification[0].label
+                handedness = handedness_label
 
                 # Draw hand landmarks on the image
-                mp_draw.draw_landmarks(
+                mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS,
+                                       mp_draw.DrawingSpec(color=(0, 255, 0), thickness = 2, circle_radius=2),
+                                       mp_draw.DrawingSpec(color=(0, 0, 255), thickness=2)
                                         )
 
 
@@ -160,12 +173,12 @@ def main():
 
                 # Perform scrolling action based on gesture with delay
                 if gesture == "scroll_up" and (current_time - last_scroll_time) > SCROLL_DELAY:
-                     # Scroll up
-                    last_scroll_time = 
+                    pyautogui.scroll(SCROLL_SPEED)# Scroll up
+                    last_scroll_time = current_time 
 
                 elif gesture == "scroll_down" and (current_time - last_scroll_time) > SCROLL_DELAY:
-                     # Scroll down
-                    last_scroll_time = 
+                    pyautogui.scroll(SCROLL_SPEED) # Scroll down
+                    last_scroll_time = current_time
 
 
 
