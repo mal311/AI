@@ -141,7 +141,7 @@ def main():
             break
 
         img = cv2.flip(img, 1) # Flip the image for a mirror effect
-        img_rgb = cv2.cvtCOLOR(img, cv2.COLOR_BGR2RGB)
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(img_rgb)
 
         gesture = "none"
@@ -154,7 +154,7 @@ def main():
             for hand_landmarks, hand_info in zip(results.multi_hand_landmarks, results.multi_handedness):
 
                 # Get hand label (Left/Right)
-                handedness_label = hand_info.classification.classification[0].label
+                handedness_label = hand_info.classification[0].label
                 handedness = handedness_label
 
                 # Draw hand landmarks on the image
@@ -190,12 +190,14 @@ def main():
 
 
         # Display gesture and FPS on the image
-        
+        cv2.putText(img, f'Gesture: {gesture}', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
+        cv2.putText(img, f'FPS: {int(fps)}', (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
+        cv2.putText(img, f'Hand: {handedness}', (10, 130), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
         # Show the image
         cv2.imshow("Hand Gesture Scroll Control", img)
-
-
 
         # Exit the loop when 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -208,4 +210,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

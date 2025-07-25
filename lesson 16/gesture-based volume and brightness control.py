@@ -41,7 +41,7 @@ while True:
         break
 
     img = cv2.flip(img, 1)#Flip the image for a mirror effect
-    img_rgb = cv2.cvtCOLOR(img, cv2.COLOR_BGR2RGB)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(img_rgb)
 
     if results.multi_hand_landmarks and results.multi_handedness:
@@ -62,3 +62,14 @@ while True:
             cv2.circle(img, thumb_pos, 10, (255, 0, 0), cv2.FILLED)
             cv2.circle(img, index_pos, 10, (255, 0, 0), cv2.FILLED)
             cv2.line(img, thumb_pos, index_pos, (0, 255, 0), 3)
+
+            #Calculate the distance between thumb and index finger
+            distance = hypot(index_pos[0] - thumb_pos[0] - index_pos[1] - thumb_pos[1])
+
+            if hand_label == "Right": #Control volume with the right hand
+                vol = np.interp(distance, [30, 300], [min_vol, max_vol])
+                try:
+                    volume.SetMasterVolumeLevel(vol, None)
+                
+                except Exception as e:
+                    print(f"Error: adjusting volume: {e}")
