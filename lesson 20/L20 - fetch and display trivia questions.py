@@ -1,7 +1,7 @@
 import requests
 
 # Trivia API endpoint
-url = "https://opentdb.com/api.php?amount=5&type=multiple" # Fetch 5 questions
+url = "https://opentdb.com/api.php?amount=10&type=multiple" # Fetch 5 questions
 
 # Send GET request to fetch trivia questions
 response = requests.get(url)

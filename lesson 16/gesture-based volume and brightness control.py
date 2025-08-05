@@ -51,8 +51,8 @@ while True:
             mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
             #Extract the tip of the thumb and index finger
-            thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark_THUMB_TIP]
-            index_tip = hand_landmarks.landmark[mp_hands.HandLandmark_INDEX_FINGER_TIP]
+            thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
+            index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
 
             h, w, _ = img.shape
             thumb_pos = (int(thumb_tip.x * w), int(thumb_tip.y * h))
