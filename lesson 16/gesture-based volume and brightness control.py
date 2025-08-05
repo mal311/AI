@@ -64,7 +64,7 @@ while True:
             cv2.line(img, thumb_pos, index_pos, (0, 255, 0), 3)
 
             #Calculate the distance between thumb and index finger
-            distance = hypot(index_pos[0] - thumb_pos[0] - index_pos[1] - thumb_pos[1])
+            distance = hypot(index_pos[0] - thumb_pos[0], index_pos[1] - thumb_pos[1])
 
             if hand_label == "Right": #Control volume with the right hand
                 vol = np.interp(distance, [30, 300], [min_vol, max_vol])
@@ -90,13 +90,13 @@ while True:
                 except Exception as e :
                     print(f"Error adjusting brightness: {e}")
 
-                    #Visual feedback for brightness
-                    brightness_bar = np.interp(distance, [30, 300], [40, 150])
-                    cv2.rectangle(img, (100, 150), (135, 400), (0, 255, 0), 2)
+                #Visual feedback for brightness
+                brightness_bar = np.interp(distance, [30, 300], [40, 150])
+                cv2.rectangle(img, (100, 150), (135, 400), (0, 255, 0), 2)
 
-                    cv2.rectangle(img, (100, int(brightness_bar)), (135, 400), (0, 255, 0), cv2.FILLED)
+                cv2.rectangle(img, (100, int(brightness_bar)), (135, 400), (0, 255, 0), cv2.FILLED)
 
-                    cv2.putText(img, f"Brightness: {int(brightness)}%", (90, 450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                cv2.putText(img, f"Brightness: {int(brightness)}%", (90, 450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
   
     #Show the video feed with annotations
     cv2.imshow("Gesture Volume And Brightness Controller", img)
