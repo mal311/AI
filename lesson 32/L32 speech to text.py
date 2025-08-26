@@ -62,25 +62,25 @@ def save_audio(data, rate, width, filename="lesson 32/audio.wav"):
         wf.writeframes(data)
     print(f"Saved: {filename}")
 
-def transcribe_audio(data, rate, width, filename=""):
-    r = sr.()
-    audio = AudioData()
+def transcribe_audio(data, rate, width, filename="lesson 32/transcription.txt"):
+    r = sr.Recognizer()
+    audio = AudioData(data, rate, width)
     try:
-        text = r.()
+        text = r.recognize_google(audio)
     except sr.UnknownValueError:
-        text = 
-    except sr.RequestError as :
-        text = f"API Error: {}"
+        text = "Could not understand the audio"
+    except sr.RequestError as e:
+        text = f"API Error: {e}"
     
     print("Transcription:", text)
 
     with open(filename, "w") as f:
-        f.()
-    print(f"Saved: {}")
+        f.write(text)
+    print(f"Saved: {filename}")
 
 def show_waveform(data, rate):
-    samples = np.(data, dtype=np.int16)
-    time_axis = np.(0, len() / rate, num=len())
+    samples = np.frombuffer(data, dtype=np.int16)
+    time_axis = np.linspace(0, len(samples) / rate, num=len(samples))
     plt.plot(time_axis, samples)
     plt.title("Audio Waveform")
     plt.xlabel("Time (s)")
@@ -90,10 +90,10 @@ def show_waveform(data, rate):
 
 def main():
     print("Start speaking. Press Enter to stop.")
-    audio_data, rate, width = ()
-    save_audio()
-    transcribe_audio()
-    show_waveform()
+    audio_data, rate, width = record_until_enter()
+    save_audio(audio_data, rate, width)
+    transcribe_audio(audio_data, rate, width)
+    show_waveform(audio_data, rate)
 
 if __name__ == "__main__":
     main()
