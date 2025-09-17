@@ -29,7 +29,7 @@ def callback(indata, frames, time, status):
                 #voice assistant logic here based on the recognized text
                 result = process_query(result['text'])
                 print(f"VA: {result}")
-
+ # add here
 def process_query(query):
     query = query.lower()
     if "time" in query:
