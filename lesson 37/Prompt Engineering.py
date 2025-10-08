@@ -63,3 +63,15 @@ def silly_prompt():
     contextual_response = generate_response(contextual_prompt)
 
     print()
+    
+    print("AI's response to the contextual prompt:")
+    print(contextual_response)
+    
+    # Reflection Questions
+    print("\n--- Reflection ---")
+    print("1. How did the AI's response change when the prompt was made more specific?")
+    print("2. How did the AI's response improve with the added context?")
+    print("3. Which prompt produced the most relevant and tailored response? Why?")
+
+#Run the interactive tutorial
+silly_prompt()
