@@ -62,9 +62,9 @@ def temperature_prompt_activity():
     print()
     print("\n--- LOW TEMPERATURE (0.1) - More Deterministic ---")
 
-    low_temp_response = generate_response(base_prompt, temperature=)
+    low_temp_response = generate_response(base_prompt, temperature=0.1)
 
-    print()    
+    print(low_temp_response)    
 
     # Add a small delay between API calls to avoid rate limiting
     time.sleep(1)
@@ -193,7 +193,7 @@ def generate_streaming_response(prompt, temperature=0.5):
 
         # Configure generation parameters
         generate_content_config = types.GenerateContentConfig(
-            temperature=,
+            temperature=temperature,
             response_mime_type="text/plain",
         )        
 
@@ -203,8 +203,8 @@ def generate_streaming_response(prompt, temperature=0.5):
 
         for chunk in client.models.generate_content_stream(
             model="gemini-2.0-flash",
-            contents=,
-            config=,
+            contents=contents,
+            config=generate_content_config,
         ):
             print(chunk.text, end="")
 
@@ -230,4 +230,4 @@ if __name__ == "__main__":
 
     if choice == 'y':
         prompt = input("\nEnter a prompt for streaming response: ")
-        generate_streaming_response(, temperature=)
+        generate_streaming_response(prompt, temperature=0.7)
