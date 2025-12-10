@@ -5,7 +5,7 @@ import config
 import io
 
 # Initialize Gemini API client
-client = genai.Client(api_key="")
+client = genai.Client(api_key="AIzaSyBDt6FHhJjOTFQtdmtz7hseDnUiSYgiUSM")
 
 def generate_response(prompt: str, temperature:  float= 0.1) -> str:
     """Generate response using Gemini API with math-focused system prompt."""
@@ -148,7 +148,7 @@ def setup_ui():
             st.warning("⚠️ Please enter a math problem before clicking Solve Problem.")
 
     # Show conversation history
-    if st.session_state.:
+    if st.session_state.history:
         st.markdown("### 📋 Solution History (Latest First)")
         st.markdown(
             """
@@ -196,19 +196,19 @@ def setup_ui():
         )
 
         history_html = '<div class="history-box">'
-         = len(st.session_state.history)
+        total_questions = len(st.session_state.history)
         for idx, qa in enumerate(st.session_state.history):
             # Latest question gets the highest number (Q3, Q2, Q1...)
             question_num = total_questions - idx
             
-             = f'<span class="difficulty">{qa.get("difficulty", "N/A")}</span>' if "difficulty" in qa else ""
+            difficulty_badge = f'<span class="difficulty">{qa.get("difficulty", "N/A")}</span>' if "difficulty" in qa else ""
             
-             += f'<div class="question">Problem {question_num}: {qa["question"]}{difficulty_badge}</div>'
+            history_html += f'<div class="question">Problem {question_num}: {qa["question"]}{difficulty_badge}</div>'
 
             history_html += f'<div class="answer">Solution {question_num}: {qa["answer"]}</div>'
 
         history_html += '</div>'
-        st.markdown(history_html, =True)
+        st.markdown(history_html, unsafe_allow_html=True)
 
 def main():
     setup_ui()
