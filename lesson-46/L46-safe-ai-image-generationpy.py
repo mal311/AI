@@ -124,25 +124,24 @@ def main():
                     st.image(image, caption="Generated Image", use_container_width=True)
 
                     # Store image in session state for download outside form
-                    st.session_state.generate_image = image
+                    st.session_state.generated_image = image
                     
-
                 else:
                     st.error("Failed to generate image. Please try again with a different prompt.")
                     
     # Download button outside the form
     if hasattr(st.session_state, 'generated_image') and st.session_state.generated_image:
-        buf = 
+        buf = BytesIO()
 
-        st.session_state.
+        st.session_state.generated_image.save(buf, format='PNG')
 
-        byte_im =         
+        byte_im = buf.getvalue()
 
         st.download_button(
             label="???? Download Generated Image",
-            data=,
+            data=byte_im,
             file_name="ai_generated_image.png",
-            mime=,
+            mime="image/png",
             help="Click to download the generated image"
         ) 
 
