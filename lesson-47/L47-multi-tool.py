@@ -94,13 +94,12 @@ def run_Math_Mastermind():
                 mime="text/plain",
             )
 
-    # Input and submit form
     with st.form(key="math_form", clear_on_submit=True):
         user_input = st.text_area(
             "🔢 Enter your math problem here:", 
             height=100,
             placeholder="Example: Solve x² + 5x + 6 = 0 or Find the integral of 2x + 3",
-            key=f"user_input_{st.session_state.input_key}"
+            key=f"user_input_{st.session_state.input_key_mm}"
         )
         
         col1, col2 = st.columns([3, 1])
@@ -112,115 +111,74 @@ def run_Math_Mastermind():
         
         if submitted and user_input.strip():
             # Add difficulty context to the prompt
-            enhanced_prompt = f"[{difficulty} Level] {user_input.strip()}"
-            
+            enhanced_prompt = f"[{difficulty} Level] {user_input.strip()}" 
             with st.spinner("🔍 Analyzing and solving your math problem..."):
-                response = generate_response(enhanced_prompt)
-            
-            # Insert new Q&A at front (latest on top)
-            st.session_state.history.insert(0, {
+                response = generate_math_response(enhanced_prompt)
+            st.session_state.history_mm.insert(0, {
                 "question": user_input.strip(), 
                 "answer": response,
                 "difficulty": difficulty
             })
-            
-            # Increment input key to reset the input field
-            st.session_state.input_key += 1
+            st.session_state.input_key_mm += 1
             st.rerun()
-        
         elif submitted and not user_input.strip():
             st.warning("⚠️ Please enter a math problem before clicking Solve Problem.")
 
-    # Show conversation history
-    if st.session_state.history:
+    if st.session_state.history_mm:
         st.markdown("### 📋 Solution History (Latest First)")
-        st.markdown(
-            """
-            <style>
-            .history-box {
-                max-height: 500px;
-                overflow-y: auto;
-                border: 2px solid #4CAF50;
-                padding: 15px;
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                border-radius: 10px;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            .question {
-                font-weight: 700;
-                color: #2E7D32;
-                margin-top: 15px;
-                margin-bottom: 8px;
-                font-size: 16px;
-            }
-            .difficulty {
-                display: inline-block;
-                background-color: #FF9800;
-                color: white;
-                padding: 2px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: bold;
-                margin-left: 10px;
-            }
-            .answer {
-                margin-bottom: 20px;
-                white-space: pre-wrap;
-                color: #1B5E20;
-                line-height: 1.6;
-                background-color: rgba(255, 255, 255, 0.7);
-                padding: 12px;
-                border-radius: 8px;
-                border-left: 4px solid #4CAF50;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
+        for idx, qa in enumerate(st.session_state.history_mm):
+            question_num=len(st.session_state.history_mm)-idx
+            difficulty_badge= f"[{qa.get('difficulty', 'N/A')}]"
+            st.markdown(f"**Problem {question_num} {difficulty_badge}:** {qa['question']}")
+            st.markdown(f"**Solution {question_num}: **\n{qa['answer']}")
 
-        history_html = '<div class="history-box">'
-        total_questions = len(st.session_state.history)
-        for idx, qa in enumerate(st.session_state.history):
-            # Latest question gets the highest number (Q3, Q2, Q1...)
-            question_num = total_questions - idx
-            
-            difficulty_badge = f'<span class="difficulty">{qa.get("difficulty", "N/A")}</span>' if "difficulty" in qa else ""
-            
-            history_html += f'<div class="question">Problem {question_num}: {qa["question"]}{difficulty_badge}</div>'
+# -------- Safe AI Image Generator --------
 
-            history_html += f'<div class="answer">Solution {question_num}: {qa["answer"]}</div>'
+def run_safe_ai_image_generator():
+    st.title("🎨 Safe AI Image Generator")
+    st.write("Enter a description to generate a safe and responsible AI image using Gemini 2.0 Flash.")
 
-        history_html += '</div>'
-        st.markdown(history_html, unsafe_allow_html=True)
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-    history_html = '<div class="history-box">'
-    for idx, qa in enumerate(st.session_state.history, start=1):
-        q = qa["question"]
-        a = qa["answer"]
-        history_html += f'<div class="question">Q{idx}: {q}</div>'
-        history_html += f'<div class="answee">A{idx}: {a}</div>'
-    history_html += '</div>'
-    st.markdown(history_html, unsafe_allow_html=True)
+    def is_prompt_safe(prompt: str) -> bool:
+        forbidden_keywords = [
+            "violence", "weapon", "gun", "blood", "nude", "porn", "drugs", "hate", "racism", "sex",
+            "terror", "bomb", "abuse", "kill", "death", "suicide", "self-harm", "hate speech"
+        ]
+
+        pattern = re.compile("|".join(forbidden_keywords), re.IGNORECASE)
+        return not bool(pattern.search(prompt)) 
+
+    def generate_image(prompt: str):
+        if not is_prompt_safe(prompt):
+            return None, "⚠️ Your prompt contains restricted or unsafe content. Please modify and try again"    
+        try:
+            model = "gemini-2.0-flash-preview-image-generation"
+            contents = [types.Content(role="user", parts=[types.Part.from_text(text=prompt)])]
+            config_params = types.GenerateContentConfig(
+                response_modalities=["IMAGE", "TEXT"],
+                response_mime_type="text/plain",
+            )        
+
+            # Use streaming approach like in the reference
+            for chunk in client.models.generate_content_stream(
+                model=model,
+                contents=contents,
+                config=config_params,
+            ):
+                if (
+                    chunk.candidates is None
+                    or chunk.candidates[0].content is None
+                    or chunk.candidates[0].content.parts is None):
+                    continue                
+                if (chunk.candidates[0].content.parts[0].inline_data and 
+                    chunk.candidates[0].content.parts[0].inline_data.data):
+                    inline_data = chunk.candidates[0].content.parts[0].inline_data
+                    data_buffer = inline_data.data
+                    image = Image.open(BytesIO(data_buffer))
+                    return image, None           
+                elif chunk.text:
+                    continue        
+            return None, "No image was generated in the response."        
+        except Exception as e:
+            return None, f"Error during image generation: {str(e)}"
+    
+    with st.form(key="image_gen_form")
